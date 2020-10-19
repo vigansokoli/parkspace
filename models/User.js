@@ -5,10 +5,14 @@ const { Schema } = mongoose;
 const UserSchema = new Schema({
   name:  String, // String is shorthand for {type: String}
   accountID: Number,
-  phone: Number,
+  phone: {type: Number, required: [true, "can't be blank"]},
   email: {type: String, required: [true, "can't be blank"]},
   comments: [{ body: String, date: Date }],
-  date: { type: Date, default: Date.now }
+  date: { type: Date, default: Date.now },
+  city: String,
+  country: String,
+  street: String,
+  postalCode: Number
 });
 
 

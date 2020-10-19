@@ -11,7 +11,7 @@ router.post('/', userController.list);
 
 router.post("/login", userController.login);
 
-// router.post("/updateNotificationToken", verifyToken, userController.user_update_notification);
+router.post("/update", verifyToken, userController.user_update_notification);
 
 // router.post("/clean", verifyToken, userController.user_post_clean);
 

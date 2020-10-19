@@ -11,5 +11,7 @@ module.exports = {
   mongoDBServer: process.env.MONGODB_URI || process.env.MONGO_URL,
   mongoDBLocal: process.env.MONGODB_LOCAL_URI,
   nodeEnv: process.env.NODE_ENV || 'development',
-  isDokku
+  isDokku,
+  googleClientID=process.env.GOOGLE_CLIENT_ID,
+  googleClientSecret=process.env.GOOGLE_CLIENT_SECRET
 };
