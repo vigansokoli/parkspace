@@ -5,7 +5,7 @@ const User = require("../models/User");
 // const s3Service = require('../services/s3.service');
 
 exports.list = async (req, res) => {
-    console.log("shit happening here");
+    // console.log("shit happening here");
   const users = await User.find();
   res.status(200).send({
     players: users.map(user => user.toJSON()),

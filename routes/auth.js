@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var passport = require("passport");
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -7,9 +8,9 @@ router.get('/', function(req, res, next) {
 });
 
 
-router.get('/google', function(req, res, next) {
-    res.render('index', { title: 'Google Login' });
-  });
+router.get('/google', passport.authenticate("google", {
+  scope: ['profile']
+}));
 
 router.get('/facebook', function(req, res, next) {
     res.render('index', { title: 'Facebook Login' });
