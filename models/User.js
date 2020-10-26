@@ -3,15 +3,15 @@ var mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const UserSchema = new Schema({
-  name:  String, // String is shorthand for {type: String}
-  accountID: Number,
-  phone: {type: Number, required: [true, "can't be blank"]},
+  name: String, // String is shorthand for {type: String}
+  loginID: {type:String, required:[true, "can't be blank"]},
   email: {type: String, required: [true, "can't be blank"]},
-  comments: [{ body: String, date: Date }],
-  date: { type: Date, default: Date.now },
+  // credentials: {},
+  phone: {type: Number},
+  // date: { type: Date, default: Date.now },
   city: String,
   country: String,
-  street: String,
+  street: String, 
   postalCode: Number
 });
 

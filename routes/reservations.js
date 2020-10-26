@@ -1,16 +1,16 @@
 var express = require('express');
 var router = express.Router();
-var reservation_controller = require("../../controller/reservation.controller.js");
+var reservationController = require("../../controller/reservation.controller.js");
 
-router.post('/', verifyToken, reservation_controller.list);
+router.get('/', reservationController.list);
 
-router.post('/new', verifyToken, reservation_controller.create);
+router.post('/new', reservationController.new);
 
-router.post('/start', [verifyToken, middleware.checkGame], reservation_controller.start);
+router.delete('/delete/:id', reservationController.delete);
 
-router.post('/restart', [verifyToken, middleware.checkGame], reservation_controller.restart);
+router.post('/get', reservationController.get);
 
-router.post('/history', verifyToken, reservation_controller.history);
+router.put('/update', reservationController.update);
 
 module.exports = router;
 

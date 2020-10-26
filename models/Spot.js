@@ -1,21 +1,25 @@
-import mongoose from 'mongoose';
+var mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const CarSchema = new Schema({
+const SpotSchema = new Schema({
     sector: {type:Number, required: true},
     maxDuration: Number, // String is shorthand for {type: String}
     location: {
-        lat: Number,
-        long: Number
+        lat: {type: Number, required:true},
+        long: {type: Number, required:true}
     },
     spaces: Number,
     available: Number,
+    isDeleted: {type: Boolean, default:false},
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    startTime: {type: String, required:true},
-    endTime:  {type: String, required:true},
-});
+    startTime: {type: Date, required:true},
+    endTime:  {type: Date, required:true}
 
-CarSchema.path('email').validate(function (email) {
-    var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-    return emailRegex.test(email.text); // Assuming email has a text attribute
-}, 'The e-mail field cannot be empty.')
+}, { timestamps: true });
+
+
+// YYYY-mm-dd THH:MM:ss
+//  date/time format
+// or milliseconds 
+
+module.exports = mongoose.model("Spot", SpotSchema);

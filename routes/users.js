@@ -8,13 +8,12 @@ var userController = require("../controllers/user.controller");
 
 router.post('/', userController.list);
 
-router.post("/login", userController.login);
+// router.post("/login", userController.login);
 
-// router.post("/update", userController.user_update_notification);
+router.post('/profile', userController.profile);
 
-// router.post("/clean", verifyToken, userController.user_post_clean);
+router.put("/update", userController.update);
 
-// router.post("/upgrade", verifyToken, userController.user_post_upgrade);
-
+router.delete('/delete/:id', userController.delete);
 
 module.exports = router;

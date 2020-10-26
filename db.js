@@ -11,7 +11,9 @@ _connect() {
 
   if(nodeEnv == "production")
     mongoDBURI = mongoDBServer;
-    
+
+    console.log("the mongodburi is " +  mongoDBURI);
+
      mongoose.connect(mongoDBURI,
      {
         useNewUrlParser: true,
