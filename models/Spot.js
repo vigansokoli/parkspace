@@ -3,6 +3,7 @@ const { Schema } = mongoose;
 
 const SpotSchema = new Schema({
     sector: {type:Number, required: true},
+    name: {type:String, required: true},
     maxDuration: Number, // String is shorthand for {type: String}
     location: {
         lat: {type: Number, required:true},
@@ -13,7 +14,8 @@ const SpotSchema = new Schema({
     isDeleted: {type: Boolean, default:false},
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     startTime: {type: Date, required:true},
-    endTime:  {type: Date, required:true}
+    endTime:  {type: Date, required:true},
+    pricePerHour: {type:Number, required:true}
 
 }, { timestamps: true });
 

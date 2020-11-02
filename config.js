@@ -16,4 +16,5 @@ module.exports = {
     clientSecret: process.env.GOOGLE_CLIENT_SECRET
   },
   isDokku,
+  price : 1.7
 };

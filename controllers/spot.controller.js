@@ -13,6 +13,7 @@ exports.new = async (req, res) => {
   var parameters  = req.body;
 
   var newSpot = new Spot(parameters);
+
   await newSpot.save().then(spot=>{
     res.json(spot);
   }).catch(err => {
