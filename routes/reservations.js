@@ -6,7 +6,7 @@ var passport = require("passport");
 router.get('/', passport.authenticate("jwt"),reservationController.list);
 
 router.post('/new', passport.authenticate("jwt"), reservationController.new);
-
+1
 router.post('/end', passport.authenticate("jwt"), reservationController.end);
 // router.delete('/delete/:id', reservationController.delete);
 

@@ -13,9 +13,15 @@ const SpotSchema = new Schema({
     available: Number,
     isDeleted: {type: Boolean, default:false},
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    startTime: {type: Date, required:true},
-    endTime:  {type: Date, required:true},
-    pricePerHour: {type:Number, required:true}
+    startTime: { 
+        hours: {type:Number ,required:true},
+        minutes:{type:Number ,required:true},
+       },
+       endTime: { 
+    hours: {type:Number ,required:true},
+    minutes:{type:Number ,required:true},
+    },
+    pricePerHour: {type:Number}
 
 }, { timestamps: true });
 
