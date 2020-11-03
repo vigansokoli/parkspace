@@ -1,4 +1,6 @@
 const User = require("../models/User");
+const {secret} = require("../config");
+const jwt = require("jsonwebtoken");
 
 exports.list = async (req, res) => {
   const users = await User.find();
@@ -7,12 +9,25 @@ exports.list = async (req, res) => {
   });
 };
 
-exports.list = async (req, res) => {
-  const users = await User.find();
-  res.status(200).send({
-    players: users.map(user => user.toJSON()),
-  });
+exports.login = async (req, res) => {
+  console.log("im here");
+  const user = req.user;
+  const token = jwt.sign({ _id: user._id }, secret);
+  res
+    .header("authorization", token)
+    .status(200)
+    .send(user.toAuthJSON(token));
 };
+
+exports.register = async (req, res) => {
+  const user = req.user;
+  const token = jwt.sign({ _id: user._id }, secret);
+  res
+    .header("authorization", token)
+    .status(200)
+    .send(user.toAuthJSON(token));
+};
+
 
 exports.update = function (req, res, next) {
 

@@ -6,6 +6,8 @@ var cookieSession = require('cookie-session');
 var logger = require('morgan');
 
 const passportSetup = require("./config/passport-setup");
+const passportJWT = require("./config/passport-jwt");
+const passportLocal = require("./config/passport-local");
 const passport =require("passport");
 const db = require("./db");
 

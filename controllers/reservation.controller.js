@@ -13,11 +13,9 @@ exports.list = async (req, res) => {
 
 exports.new = async (req, res, next) => {
     var parameters = req.body;
-    var spotId = "5f95ea4ab515ee26e06d8586";
-
-    // req.body.spotId;
-    var userId = req.user;
-    userId = "5f95a3f1f92fbe18047df3e1";
+    // These variables may be required to be given differently
+    var spotId = req.body.spot;
+    var userId = req.body.user;
 
     /*                                      
         Need to fix the user id
@@ -51,7 +49,7 @@ exports.new = async (req, res, next) => {
                     based on the working time and current time find the amount of hours to store in the duration.
 
                     currentTime and endTime
-
+                
                 */
             }
 
@@ -63,14 +61,12 @@ exports.new = async (req, res, next) => {
             return reservation.save();
 
         }).then(savedReservation => {
-            console.log(savedReservation);
+
             var dateStarted = new Date(savedReservation.createdAt);
-            console.log(dateStarted.getMinutes());
             dateStarted.setHours(dateStarted.getHours() + savedReservation.duration.hours);
-            console.log(dateStarted);
             dateStarted.setMinutes(dateStarted.getMinutes() + savedReservation.duration.minutes);
-            console.log(dateStarted);
-            var bllablla = schedule.scheduleJob(dateStarted, function (savedReservation) {
+
+            var scheduling = schedule.scheduleJob(dateStarted, function (savedReservation) {
                 Reservation.update({ id: savedReservation.id }, { hasEnded: true }).then(updatedFields => {
                     console.log("updated:");
                     console.log(updatedFields);
@@ -88,13 +84,6 @@ exports.new = async (req, res, next) => {
 
     }
 
-    // var newReservation = new Reservation(parameters);
-    // await newSpot.save().then(spot=>{
-    //   res.json(spot);
-    // }).catch(err => {
-    //   console.log(err);
-    //   return res.status(422).json(err);
-    // })
 };
 
 
@@ -112,56 +101,16 @@ exports.end = async (req, res) => {
         var startTime = reservation.createdAt;
         startTime = new Date(reservation.createdAt);
         startTime = startTime.getHours() + startTime.getMinutes() / 60;
-        console.log(startTime);
 
         var endTime = new Date();
         var endTime = endTime.getHours() + endTime.getMinutes() / 60;
-        console.log(endTime);
 
         var totalDuration = endTime - startTime;
         var expenses = parseFloat((totalDuration * price).toFixed(2));
 
-        console.log(expenses);
+        res.json({ expenses: expenses });
 
         reservation.hasEnded = true;
-
         return reservation.save();
-    }).then(blla =>{
-        res.json({ expenses: expenses });
     })
-
-
-    // .then(reservation=>{
-    //     Spot.findById(reservation.spot).then(spot=>{
-
-    //     })
-    // });
-
-    // const users = await User.find();
-    // res.status(200).send({
-    //     players: users.map(user => user.toJSON()),
-    // });
-};
-
-
-// exports.start = async (req, res) => {
-//     const users = await User.find();
-//     res.status(200).send({
-//         players: users.map(user => user.toJSON()),
-//     });
-// };
-
-
-// exports.restart = async (req, res) => {
-//     const users = await User.find();
-//     res.status(200).send({
-//         players: users.map(user => user.toJSON()),
-//     });
-// };
-
-// exports.history = async (req, res) => {
-//     const users = await User.find();
-//     res.status(200).send({
-//         players: users.map(user => user.toJSON()),
-//     });
-// };
+}
