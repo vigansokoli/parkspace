@@ -37,8 +37,8 @@ exports.get = async (req, res) => {
 }
 
 exports.delete = async (req, res) => {
-  await Spot.findByIdAndRemove(req.params.id).then(user => {
-    res.json(user);
+  await Spot.findByIdAndRemove(req.params.id).then(spot => {
+    res.json(spot);
   }).catch(err => {
     return res.status(422).json({ errors: { message: err.message } });
   })
@@ -48,8 +48,8 @@ exports.update = async (req, res) =>  {
 
   var id = req.body.id;
 
-  await Spot.updateOne({ _id: id }, req.body).then(user => {
-    res.json(user);
+  await Spot.updateOne({ _id: id }, req.body).then(spot => {
+    res.json(spot);
   }).catch(err => {
     return res.status(422).json({ errors: err });
   })

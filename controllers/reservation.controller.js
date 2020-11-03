@@ -13,22 +13,8 @@ exports.list = async (req, res) => {
 
 exports.new = async (req, res, next) => {
     var parameters = req.body;
-    // These variables may be required to be given differently
     var spotId = req.body.spot;
-    var userId = req.body.user;
-
-    /*                                      
-        Need to fix the user id
-
-        Authentication?!?!
-
-        cookies/sessions?
-        send a parameter in the response to be used
-        accept a parameter in the response
-
-        use JWT??
-
-    */
+    var userId = req.user;
 
     if (userId) {
         User.findById(userId).then(user => {
@@ -42,15 +28,6 @@ exports.new = async (req, res, next) => {
                 reservation.duration = req.body.duration;
             } else {
                 reservation.fullDay = true;
-                /* need to fix the duration if full day
-
-                /*
-                    get the spot working time
-                    based on the working time and current time find the amount of hours to store in the duration.
-
-                    currentTime and endTime
-                
-                */
             }
 
             reservation.user = user.id;
@@ -76,12 +53,12 @@ exports.new = async (req, res, next) => {
             res.json(savedReservation);
 
         }).catch(err => {
-
+            console.log(err);
             res.status(400).json(err);
         });
 
     } else {
-
+        
     }
 
 };
@@ -89,7 +66,7 @@ exports.new = async (req, res, next) => {
 
 exports.end = async (req, res) => {
 
-    var userId = req.body.user;
+    var userId = req.user;
     var spotId = req.body.spot;
 
     Reservation.find({ user: userId, spot: spotId }).then(reservation => {
