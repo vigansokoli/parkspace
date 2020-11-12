@@ -45,6 +45,11 @@ UserSchema.methods.toAuthJSON = function(token) {
     _id: this._id,
     email: this.email,
     token: token,
+    phone: this.phone,
+    city: this.city,
+    country: this.country,
+    street: this.street,
+    postalCode: this.postalCode
   };
 };
 

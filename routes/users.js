@@ -13,7 +13,7 @@ router.post("/login", passport.authenticate('login'), userController.login);
 
 router.post("/register", passport.authenticate('register'), userController.register);
 
-router.post('/profile', passport.authenticate("jwt"), userController.profile);
+router.get('/profile', passport.authenticate("jwt"), userController.profile);
 
 router.put("/update",passport.authenticate("jwt"), userController.update);
 
