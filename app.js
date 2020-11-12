@@ -2,7 +2,7 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-var cookieSession = require('cookie-session');
+// var cookieSession = require('cookie-session');
 var logger = require('morgan');
 
 const passportSetup = require("./config/passport-setup");
@@ -19,16 +19,10 @@ var reservationsRouter = require('./routes/reservations');
 
 
 var app = express();
-
-// app.use(cookieParser("asdfmovies"));
-app.use(cookieSession({
-  maxAge: 24*60*60*1000,
-  keys:["asdfmovies"]
-}));
+app.use(cookieParser());
 
 app.use(passport.initialize());
 app.use(passport.session());
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

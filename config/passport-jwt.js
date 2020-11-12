@@ -13,6 +13,8 @@ passport.use(
         },
         // eslint-disable-next-line consistent-return
         async (token, done) => {
+
+            console.log("wtf");
             try {
                 // Find the user associated with the email provided by the user
                 const user = await User.findById(token._id);
