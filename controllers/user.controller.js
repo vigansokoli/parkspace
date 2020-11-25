@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const {secret} = require("../config");
 const jwt = require("jsonwebtoken");
+const { rescheduleJob } = require("node-schedule");
 
 exports.list = async (req, res) => {
   const users = await User.find();
@@ -36,6 +37,34 @@ exports.register = async (req, res) => {
     .status(200)
     .send(user.toAuthJSON(token));
 };
+
+exports.resetPassword = function (req, res, next) {
+  var user = req.user;
+  // var id = req.user._id;
+  var newUserFields = req.body;
+
+  var newPassword = newUserFields.newPassword;
+  var oldPassword =newUserFields.oldPassword;
+
+  if(user.validatePassword(oldPassword)){
+    user.setPassword(newPassword);
+  }
+
+  user.save().then(user=>{
+    res.json(user);
+  }).catch(err=>{
+    res.status(500).json(err);
+  })
+}
+
+// async (email, password, done) => {
+//   await User.findOne({ email: email }, function (err, user) {
+//       if (err) { return done(err, false); }
+//       if (!user) { return done(badCredentials, false); }
+//       if (!user.validatePassword(password)) { return done("Invalid Password", false); }
+//       return done(null, user);
+//   });
+// }
 
 exports.update = function (req, res, next) {
   var id = req.user._id;
