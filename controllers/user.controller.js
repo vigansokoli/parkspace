@@ -11,6 +11,10 @@ exports.list = async (req, res) => {
 
 exports.login = async (req, res) => {
   console.log("im here");
+  if(req.err){
+    console.log(err);
+    return res.json(err);
+  }
   const user = req.user;
   const token = jwt.sign({ _id: user._id }, secret);
   res
@@ -20,6 +24,11 @@ exports.login = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
+
+  if(req.err){
+    console.log("pizza");
+    return res.json(err);
+  }
   const user = req.user;
   const token = jwt.sign({ _id: user._id }, secret);
   res

@@ -6,7 +6,7 @@ const crypto = require("crypto");
 const UserSchema = new Schema({
   name: String, // String is shorthand for {type: String}
   loginID: {type:String},
-  email: {type: String, required: [true, "can't be blank"]},
+  email: {type: String, required: [true, "Email can't be blank"], unique: [true, "Email must be unique!"]},
   // credentials: {},
   phone: {type: Number},
   // date: { type: Date, default: Date.now },
@@ -52,6 +52,14 @@ UserSchema.methods.toAuthJSON = function(token) {
     postalCode: this.postalCode
   };
 };
+
+UserSchema.post('save', function(error, doc, next) {
+  if (error.name === 'MongoError' && error.code === 11000) {
+    next(new Error('Email must be unique'));
+  } else {
+    next(error);
+  }
+});
 
 // UserSchema.path('email').validate(function (email) {
 //     var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;

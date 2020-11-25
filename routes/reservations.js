@@ -1,13 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var reservationController = require("../controllers/reservation.controller");
-var passport = require("passport");
+var jwtAuth = require("../config/passport-jwt");
 
-router.get('/', passport.authenticate("jwt"),reservationController.list);
+router.get('/',jwtAuth,reservationController.list);
 
-router.post('/new', passport.authenticate("jwt"), reservationController.new);
+router.post('/new',jwtAuth, reservationController.new);
 1
-router.post('/end', passport.authenticate("jwt"), reservationController.end);
+router.post('/end',jwtAuth, reservationController.end);
 // router.delete('/delete/:id', reservationController.delete);
 
 // router.post('/get', reservationController.get);

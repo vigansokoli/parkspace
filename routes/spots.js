@@ -1,17 +1,17 @@
 var express = require('express');
 var router = express.Router();
 var spotController = require("../controllers/spot.controller");
-var passport = require("passport");
+var jwtAuth = require("../config/passport-jwt");
 
-router.get('/', passport.authenticate("jwt"), spotController.list);
+router.get('/',jwtAuth, spotController.list);
 
-router.post('/new', passport.authenticate("jwt"), spotController.new);
+router.post('/new',jwtAuth, spotController.new);
 
-router.delete('/delete/:id', passport.authenticate("jwt"), spotController.delete);
+router.delete('/delete/:id',jwtAuth, spotController.delete);
 
-router.post('/get', passport.authenticate("jwt"), spotController.get);
+router.post('/get',jwtAuth, spotController.get);
 
-router.put('/update', passport.authenticate("jwt"), spotController.update);
+router.put('/update',jwtAuth, spotController.update);
 
 module.exports = router;
 

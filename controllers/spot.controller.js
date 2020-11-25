@@ -3,7 +3,7 @@ var dayjs = require('dayjs');
 
 exports.list = async (req, res) => {
   const spots = await Spot.find({isDeleted:false}).then(spots=>{
-    res.status(200).json(spots);
+    res.status(200).json({spots});
   }).catch(err=>{
     res.status(422).send({ errors: err });
   });
@@ -15,7 +15,7 @@ exports.new = async (req, res) => {
   var newSpot = new Spot(parameters);
 
   await newSpot.save().then(spot=>{
-    res.json(spot);
+    res.json({spot});
   }).catch(err => {
     console.log(err);
     return res.status(422).json(err);
@@ -24,13 +24,13 @@ exports.new = async (req, res) => {
 
 exports.find = async (req, res) => {
   await Spot.findOne({ id: req.params.id }).then(spot => {
-    console.log(spot);
+    console.log({spot});
   });
 };
 
 exports.get = async (req, res) => {
   await Spot.findById(req.body.id).then(spot => {
-    res.json(spot);
+    res.json({spot});
   }).catch(err => {
     res.status(422).send(err.message);
   })
@@ -38,18 +38,17 @@ exports.get = async (req, res) => {
 
 exports.delete = async (req, res) => {
   await Spot.findByIdAndRemove(req.params.id).then(spot => {
-    res.json(spot);
+    res.json({spot});
   }).catch(err => {
     return res.status(422).json({ errors: { message: err.message } });
   })
 }
 
 exports.update = async (req, res) =>  {
-
   var id = req.body.id;
 
   await Spot.updateOne({ _id: id }, req.body).then(spot => {
-    res.json(spot);
+    res.json({spot});
   }).catch(err => {
     return res.status(422).json({ errors: err });
   })
