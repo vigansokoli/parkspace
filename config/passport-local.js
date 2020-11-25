@@ -30,6 +30,7 @@ passport.use("register", new LocalStrategy({
         var user = new User();
 
         user.email = email;
+        user.username = email;
         user.password = password;
         user.setPassword(password);
         user.save().then(finalUser => {
