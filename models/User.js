@@ -4,13 +4,14 @@ const { Schema } = mongoose;
 const crypto = require("crypto");
 
 const UserSchema = new Schema({
-  name: String, // String is shorthand for {type: String}
+  username: {type: String, required:[true, "Username can't be blank"]}, // String is shorthand for {type: String}
   loginID: {type:String},
   email: {type: String, required: [true, "Email can't be blank"], unique: [true, "Email must be unique!"]},
   // credentials: {},
   phone: {type: Number},
   // date: { type: Date, default: Date.now },
   city: String,
+  balance: {type: Number,default: 0},
   country: String,
   street: String, 
   postalCode: Number,
@@ -44,11 +45,13 @@ UserSchema.methods.toAuthJSON = function(token) {
   return {
     _id: this._id,
     email: this.email,
+    username: this.username,
     token: token,
     phone: this.phone,
     city: this.city,
     country: this.country,
     street: this.street,
+    balance: this. balance,
     postalCode: this.postalCode
   };
 };
