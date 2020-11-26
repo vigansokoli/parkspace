@@ -13,12 +13,21 @@ exports.new = async (req, res) => {
   var parameters  = req.body;
 
   var newSpot = new Spot(parameters);
+  var startTime = parameters.startTime.hours*60 + parameters.startTime.minutes;
+  var endTime = parameters.endTime.hours*60 + parameters.endTime.minutes;
+
+  var durationMinutes = endTime - startTime;
+
+  newSpot.maxDuration = {
+    hours: Math.floor(durationMinutes / 60),
+    minutes: durationMinutes % 60
+  }
 
   await newSpot.save().then(spot=>{
     res.json({spot});
   }).catch(err => {
     console.log(err);
-    return res.status(422).json(err);
+    return res.status(422).json({error: err.toString()});
   })
 };
 
@@ -33,8 +42,8 @@ exports.find = async (req, res) => {
 exports.get = async (req, res) => {
   await Spot.findById(req.body.id).then(spot => {
     res.json({spot});
-  }).catch(err => {
-    res.status(422).send(err);
+  }).catch(error => {
+    res.status(422).send({error});
   })
 }
 

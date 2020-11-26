@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 const { Schema } = mongoose;
+var {price} = require("../config")
 
 const SpotSchema = new Schema({
     sector: {type:Number, required: true, unique:true},
@@ -21,9 +22,19 @@ const SpotSchema = new Schema({
     hours: {type:Number ,required:true},
     minutes:{type:Number ,required:true},
     },
-    pricePerHour: {type:Number}
+    maxDuration: { 
+      hours: {type:Number ,required:true},
+      minutes:{type:Number ,required:true},
+     },
+    pricePerHour: {type:Number, required:true,default: price}
 
 }, { timestamps: true });
+
+SpotSchema.path('sector').validate(function (sector) {
+  // var licenceRegex = /^[a-z]{3}-?[0-9]{4}$/g;
+  // return licenceRegex.test(licence); // Assuming email has a text attribute
+  return ("" + sector).length == 5;
+}, 'The sector has to be 5 of length');
 
 SpotSchema.post('save', function(error, doc, next) {
     if (error.name === 'MongoError' && error.code === 11000) {
