@@ -1,7 +1,6 @@
 var mongoose = require("mongoose");
 const { Schema } = mongoose;
 var dayjs = require('dayjs');
-var Time = require("./Time");
 
 const parkingPricePerHour = 1.7;
 

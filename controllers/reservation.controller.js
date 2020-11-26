@@ -29,7 +29,7 @@ exports.new = async (req, res, next) => {
             }
 
             reservation.user = user.id;
-            reservation.phone = req.body.phone;
+            // reservation.phone = req.body.phone;
 
             reservation.licencePlate = req.body.licencePlate;
 
