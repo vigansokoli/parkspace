@@ -11,7 +11,7 @@ const UserSchema = new Schema({
   phone: {type: Number},
   // date: { type: Date, default: Date.now },
   city: String,
-  balance: {type: Number,default: 0},
+  balance: {type: Number,default: 0.00},
   country: String,
   street: String, 
   postalCode: Number,

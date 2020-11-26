@@ -2,7 +2,7 @@ var mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const SpotSchema = new Schema({
-    sector: {type:Number, required: true},
+    sector: {type:Number, required: true, unique:true},
     name: {type:String, required: true},
     maxDuration: Number, // String is shorthand for {type: String}
     location: {
@@ -25,6 +25,13 @@ const SpotSchema = new Schema({
 
 }, { timestamps: true });
 
+SpotSchema.post('save', function(error, doc, next) {
+    if (error.name === 'MongoError' && error.code === 11000) {
+      next(new Error('Sector must be unique'));
+    } else {
+      next(error);
+    }
+  });
 
 // YYYY-mm-dd THH:MM:ss
 //  date/time format

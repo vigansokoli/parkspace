@@ -7,7 +7,7 @@ exports.list = async (req, res) => {
   const users = await User.find();
   res.status(200).send({
     players: users.map(user => user.toJSON()),
-  });
+  })
 };
 
 exports.login = async (req, res) => {
@@ -27,7 +27,6 @@ exports.login = async (req, res) => {
 exports.register = async (req, res) => {
 
   if(req.err){
-    console.log("pizza");
     return res.json(err);
   }
   const user = req.user;

@@ -83,18 +83,15 @@ exports.new = async (req, res, next) => {
 
 };
 
-
 exports.end = async (req, res) => {
 
     var userId = req.user;
-    // var spotId = req.body.spot;
     var expenses = 0;
 
     Reservation.findById(req.body.id).then(reservation => {
-        console.log(reservation);
-        // console.log(reservation[0].duration);
 
-        // reservation = reservation[0];
+        if(reservation.hasEnded)
+            return res.json({ err: "The reservation had ended" });
 
         var startTime = reservation.createdAt;
         startTime = new Date(reservation.createdAt);
@@ -122,8 +119,4 @@ exports.end = async (req, res) => {
     }).then(result=>{
         res.json({ expenses: expenses });
     })
-}
-
-function endReservation(reservation){
-        
 }

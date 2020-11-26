@@ -25,6 +25,8 @@ exports.new = async (req, res) => {
 exports.find = async (req, res) => {
   await Spot.findOne({ id: req.params.id }).then(spot => {
     console.log({spot});
+  }).catch(err=>{
+    res.status(422).send(err);
   });
 };
 
@@ -32,7 +34,7 @@ exports.get = async (req, res) => {
   await Spot.findById(req.body.id).then(spot => {
     res.json({spot});
   }).catch(err => {
-    res.status(422).send(err.message);
+    res.status(422).send(err);
   })
 }
 
