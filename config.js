@@ -17,5 +17,7 @@ module.exports = {
   },
   isDokku,
   price : 1.7,
-  secret: process.env.SECRET
+  secret: process.env.SECRET,
+  firebaseCredUrl: process.env.FIREBASE_CRED_URL,
+  firebaseDBUrl: process.env.FIREBASE_DB_URL
 };

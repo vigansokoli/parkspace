@@ -9,9 +9,11 @@ router.post('/new',jwtAuth, spotController.new);
 
 router.delete('/delete/:id',jwtAuth, spotController.delete);
 
-router.post('/get',jwtAuth, spotController.get);
+router.post("/update",jwtAuth, spotController.updateAll);
 
-router.put('/update',jwtAuth, spotController.update);
+router.put("/update",jwtAuth, spotController.update);
+
+router.post('/get',jwtAuth, spotController.get);
 
 module.exports = router;
 

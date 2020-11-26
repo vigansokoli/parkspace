@@ -4,6 +4,7 @@ const User = require("../models/User");
 var { price } = require("../config");
 var schedule = require("node-schedule");
 const { unsubscribe } = require("../routes/users");
+const firebase = require("../firebase");
 
 exports.list = async (req, res) => {
     const reservations = await Reservation.find();
@@ -63,12 +64,12 @@ exports.new = async (req, res, next) => {
                     console.log(payingUser.balance)
                     payingUser.balance = payingUser.balance - expenses;
                     console.log(payingUser.balance);
+                    
                     return payingUser.save();
                 }).then(result=>{
-                    // res.json({ expenses: expenses });
+                    firebase.sendRemoteNotification("Parking has ended" ,save.username);
                     console.log(result);
                 }).catch(err=>{
-                    console.log('caught it');
                     console.log(err);
                 })
             })
@@ -91,7 +92,7 @@ exports.end = async (req, res) => {
     Reservation.findById(req.body.id).then(reservation => {
 
         if(reservation.hasEnded)
-            return res.json({ err: "The reservation had ended" });
+            throw new Error("The reservation had ended");
 
         var startTime = reservation.createdAt;
         startTime = new Date(reservation.createdAt);
@@ -114,9 +115,11 @@ exports.end = async (req, res) => {
         return User.findById(done.user);
     }).then(payingUser=> {
         payingUser.balance = payingUser.balance - expenses;
-
         return payingUser.save();
     }).then(result=>{
+        firebase.sendRemoteNotification("Parking has ended" ,result.username);
         res.json({ expenses: expenses });
+    }).catch(error=>{
+        res.status(422).json({error: error.message});
     })
 }

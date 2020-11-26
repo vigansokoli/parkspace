@@ -34,10 +34,24 @@ exports.new = async (req, res) => {
 exports.find = async (req, res) => {
   await Spot.findOne({ id: req.params.id }).then(spot => {
     console.log({spot});
+    res.json({spot});
   }).catch(err=>{
     res.status(422).send(err);
   });
 };
+
+exports.updateAll = async(req,res) =>{
+  await Spot.updateMany(null, {endTime: {
+    hours: 21,
+    minutes:0
+  }}).then(spot =>{
+    console.log("pizza");
+    console.log({spot});
+    res.json({spot});
+  }).catch(err=>{
+    res.status(422).send(err);
+  });
+}
 
 exports.get = async (req, res) => {
   await Spot.findById(req.body.id).then(spot => {
