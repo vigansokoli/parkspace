@@ -26,7 +26,7 @@ var ReservationSchema = new Schema(
 ReservationSchema.path('licencePlate').validate(function (licence) {
   var licenceRegex = /^[a-z]{3}-?[0-9]{4}$/g;
   return licenceRegex.test(licence); // Assuming email has a text attribute
-}, 'The licence field has to be three letters, four numbers ex: (aaa-000, aaa000)')
+}, 'The licence field has to be three letters, four numbers ex: (aaa-0000, aaa0000)')
 
 
 module.exports = mongoose.model("Reservation", ReservationSchema);
