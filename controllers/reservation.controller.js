@@ -58,12 +58,15 @@ exports.new = (req, res, next) => {
             var reservation = new Reservation();
             reservation.spot = spot;
             var startTime, endTime;
-
-            if (!req.body.fullDay) {
-                reservation.duration = req.body.duration;
-            } else {
+            // if (!req.body.fullDay) {
+            //     reservation.duration = req.body.duration;
+            // } else {
+                
+            // }
+            if(req.body.fullDay)
                 reservation.fullDay = true;
-            }
+
+            reservation.duration = req.body.duration;
 
             startTime = new Date(Date.now());
             endTime = new Date(Date.now());
