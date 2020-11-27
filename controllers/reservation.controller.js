@@ -16,10 +16,10 @@ exports.list = async (req, res) => {
 exports.active = async (req, res) => {
     var userId = req.user._id;
     console.log(userId);
-    Reservation.find({user: userId, hasEnded:false}).populate("spot").then(reservations=>{
-        res.json({reservations});
-    }).catch(error=>{
-        res.status(500).json({error});
+    Reservation.find({ user: userId, hasEnded: false }).populate("spot").then(reservations => {
+        res.json({ reservations });
+    }).catch(error => {
+        res.status(500).json({ error });
     })
 };
 
@@ -27,10 +27,10 @@ exports.active = async (req, res) => {
 exports.history = async (req, res) => {
     var userId = req.user.id;
     console.log(userId);
-    Reservation.find({user: userId}).populate("spot").then(reservations=>{
-        res.json({reservations});
-    }).catch(error=>{
-        res.status(500).json({error});
+    Reservation.find({ user: userId }).populate("spot").then(reservations => {
+        res.json({ reservations });
+    }).catch(error => {
+        res.status(500).json({ error });
     })
 };
 
@@ -45,14 +45,14 @@ exports.new = (req, res, next) => {
     console.log("the spot id is " + spotId);
 
     if (userId) {
-        Spot.findById(spotId).then(spotFound =>{
-                console.log(spotId);
+        Spot.findById(spotId).then(spotFound => {
+            console.log(spotId);
 
-                if(!spotFound)
-                    return Promise.reject(new Error("The spot doesn't exist"));
+            if (!spotFound)
+                return Promise.reject(new Error("The spot doesn't exist"));
 
-                spot = spotFound;
-                return User.findById(userId);
+            spot = spotFound;
+            return User.findById(userId);
 
         }).then(user => {
             var reservation = new Reservation();
@@ -61,9 +61,9 @@ exports.new = (req, res, next) => {
             // if (!req.body.fullDay) {
             //     reservation.duration = req.body.duration;
             // } else {
-                
+
             // }
-            if(req.body.fullDay)
+            if (req.body.fullDay)
                 reservation.fullDay = true;
 
             reservation.duration = req.body.duration;
@@ -93,38 +93,41 @@ exports.new = (req, res, next) => {
             res.json(savedReservation);
             console.log(savedReservation);
             var stringifed = JSON.stringify(savedReservation);
-            var scheduling = schedule.scheduleJob(stringifed, dateStarted, function() {
-                
-                savedReservation = JSON.parse(stringifed);
-                var expenses =0;
+            var scheduling = schedule.scheduleJob(stringifed, dateStarted, function () {
 
-                var totalDuration = savedReservation.duration.hours + savedReservation.duration.minutes/60;
+                savedReservation = JSON.parse(stringifed);
+                var expenses = 0;
+
+                var totalDuration = savedReservation.duration.hours + savedReservation.duration.minutes / 60;
                 console.log(totalDuration);
+                if (totalDuration == 0)
+                    totalDuration = 1;
+
                 expenses = parseFloat((totalDuration * price).toFixed(2));
                 console.log(expenses)
 
-                Reservation.update({ id: savedReservation.id }, { hasEnded: true , cost: expenses}).then(updatedFields => {
+                Reservation.update({ id: savedReservation.id }, { hasEnded: true, cost: expenses }).then(updatedFields => {
                     return User.findById(savedReservation.user);
-                }).then(payingUser=> {
-                    payingUser.balance = payingUser.balance - expenses;                    
+                }).then(payingUser => {
+                    payingUser.balance = payingUser.balance - expenses;
                     return payingUser.save();
-                }).then(result=>{
+                }).then(result => {
                     // firebase.sendRemoteNotification("Parking has ended" ,save.username);
                     console.log(result);
-                }).catch(err=>{
+                }).catch(err => {
                     console.log(err);
                 })
             })
         }).catch(error => {
-            if(error.message)
+            if (error.message)
                 error = error.message;
 
             console.log(error);
-            res.status(400).json({error});
+            res.status(400).json({ error });
         });
 
     } else {
-        
+
     }
 
 };
@@ -136,7 +139,7 @@ exports.end = async (req, res) => {
 
     Reservation.findById(req.body.id).then(reservation => {
 
-        if(reservation.hasEnded)
+        if (reservation.hasEnded)
             throw new Error("The reservation had ended");
 
         var startTime = reservation.createdAt;
@@ -147,8 +150,11 @@ exports.end = async (req, res) => {
         var endTimeSeconds = endTime.getHours() + endTime.getMinutes() / 60;
 
         var totalDuration = endTimeSeconds - startTimeSeconds;
-        expenses = parseFloat((totalDuration * price).toFixed(2));
 
+        if (totalDuration == 0)
+            totalDuration = 1;
+
+        expenses = parseFloat((totalDuration * price).toFixed(2));
 
         var duration = {};
         duration.hours = endTime.getHours() - startTime.getHours();
@@ -158,15 +164,15 @@ exports.end = async (req, res) => {
         reservation.duration = duration;
         reservation.hasEnded = true;
         return reservation.save();
-    }).then(done =>{
+    }).then(done => {
         return User.findById(done.user);
-    }).then(payingUser=> {
+    }).then(payingUser => {
         payingUser.balance = payingUser.balance - expenses;
         return payingUser.save();
-    }).then(result=>{
+    }).then(result => {
         // firebase.sendRemoteNotification("Parking has ended" ,result.username);
         res.json({ expenses: expenses });
-    }).catch(error=>{
-        res.status(422).json({error: error.message});
+    }).catch(error => {
+        res.status(422).json({ error: error.message });
     })
 }
