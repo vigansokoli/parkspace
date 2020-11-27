@@ -49,10 +49,15 @@ async function prettyPrint(jsonData, pre=""){
             else {
                 pretty += jsonData[key] + "\n";
             }
-
         }
     }
     return pretty;
+}
+
+async function createOrder(){
+
+
+
 }
 
 module.exports = {client: client, prettyPrint:prettyPrint};

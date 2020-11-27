@@ -11,10 +11,9 @@ exports.list = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  console.log("im here");
   if(req.err){
     console.log(err);
-    return res.json(err);
+    return res.json({error:err});
   }
   const user = req.user;
   const token = jwt.sign({ _id: user._id }, secret);
@@ -27,7 +26,7 @@ exports.login = async (req, res) => {
 exports.register = async (req, res) => {
 
   if(req.err){
-    return res.json(err);
+    return res.json({error: err});
   }
   const user = req.user;
   const token = jwt.sign({ _id: user._id }, secret);
@@ -51,8 +50,8 @@ exports.resetPassword = function (req, res, next) {
 
   user.save().then(user=>{
     res.json(user);
-  }).catch(err=>{
-    res.status(500).json(err);
+  }).catch(error=>{
+    res.status(500).json(error);
   })
 }
 
@@ -72,7 +71,7 @@ exports.update = function (req, res, next) {
   User.updateOne({ _id: id }, newUserFields).then(user => {
     res.json(user);
   }).catch(err => {
-    return res.status(422).json({ errors: err });
+    return res.status(422).json({ error: err });
   })
 }
 
@@ -81,8 +80,8 @@ exports.profile = function(req,res,next){
 
   User.findById(id).then(user => {
     res.json(user.toAuthJSON());
-  }).catch(err => {
-    res.status(422).send(err.message);
+  }).catch(error => {
+    res.status(422).send({error});
   })
 }
 
@@ -91,6 +90,6 @@ exports.delete = function (req, res, next) {
   User.findByIdAndRemove(id).then(user => {
     res.json(user);
   }).catch(err => {
-    return res.status(422).json({ errors: { message: err.message } });
+    return res.status(422).json({ error: err });
   })
 }
