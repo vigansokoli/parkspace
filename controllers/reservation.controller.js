@@ -100,8 +100,9 @@ exports.new = (req, res, next) => {
 
                 var totalDuration = savedReservation.duration.hours + savedReservation.duration.minutes / 60;
                 console.log(totalDuration);
-                if (totalDuration == 0)
-                    totalDuration = 1;
+                
+                if (totalDuration < 1/60)
+                totalDuration = 1/60;
 
                 expenses = parseFloat((totalDuration * price).toFixed(2));
                 console.log(expenses)
@@ -151,8 +152,8 @@ exports.end = async (req, res) => {
 
         var totalDuration = endTimeSeconds - startTimeSeconds;
 
-        if (totalDuration == 0)
-            totalDuration = 1;
+        if (totalDuration < 1/60)
+            totalDuration = 1/60;
 
         expenses = parseFloat((totalDuration * price).toFixed(2));
 
