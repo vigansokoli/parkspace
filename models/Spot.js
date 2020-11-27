@@ -5,7 +5,6 @@ var {price} = require("../config")
 const SpotSchema = new Schema({
     sector: {type:Number, required: true, unique:true},
     name: {type:String, required: true},
-    maxDuration: Number, // String is shorthand for {type: String}
     location: {
         lat: {type: Number, required:true},
         long: {type: Number, required:true}
@@ -27,7 +26,6 @@ const SpotSchema = new Schema({
       minutes:{type:Number ,required:true},
      },
     pricePerHour: {type:Number, required:true,default: price}
-
 }, { timestamps: true });
 
 SpotSchema.path('sector').validate(function (sector) {
