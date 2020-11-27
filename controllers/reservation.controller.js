@@ -34,15 +34,30 @@ exports.history = async (req, res) => {
     })
 };
 
-exports.new = async (req, res, next) => {
+exports.new = (req, res, next) => {
     var parameters = req.body;
+
+    console.log(parameters);
     var spotId = req.body.spot;
     var userId = req.user;
+    var spot, user;
+
+    console.log("the spot id is " + spotId);
 
     if (userId) {
-        User.findById(userId).then(user => {
+        Spot.findById(spotId).then(spotFound =>{
+                console.log(spotId);
+
+                if(!spotFound)
+                    return Promise.reject(new Error("The spot doesn't exist"));
+
+                spot = spotFound;
+                return User.findById(userId);
+
+        }).then(user => {
             var reservation = new Reservation();
-            reservation.spot = spotId;
+            reservation.spot = spot;
+            var startTime, endTime;
 
             if (!req.body.fullDay) {
                 reservation.duration = req.body.duration;
@@ -50,9 +65,17 @@ exports.new = async (req, res, next) => {
                 reservation.fullDay = true;
             }
 
-            reservation.user = user.id;
-            // reservation.phone = req.body.phone;
+            startTime = new Date(Date.now());
+            endTime = new Date(Date.now());
+            endTime.setMinutes(endTime.getMinutes() + reservation.duration.minutes);
+            endTime.setHours(endTime.getHours() + reservation.duration.hours);
 
+            console.log(startTime);
+            console.log(endTime);
+
+            reservation.startTime = startTime;
+            reservation.endTime = endTime;
+            reservation.user = user.id;
             reservation.licencePlate = req.body.licencePlate;
 
             return reservation.save();
@@ -94,9 +117,12 @@ exports.new = async (req, res, next) => {
                     console.log(err);
                 })
             })
-        }).catch(err => {
-            console.log(err);
-            res.status(400).json(err);
+        }).catch(error => {
+            if(error.message)
+                error = error.message;
+
+            console.log(error);
+            res.status(400).json({error});
         });
 
     } else {

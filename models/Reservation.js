@@ -14,6 +14,8 @@ var ReservationSchema = new Schema(
       hours: {type:Number ,required:true},
       minutes:{type:Number ,required:true},
      },
+     startTime: Date,
+     endTime: Date,
      hasEnded: {type: Boolean, required:true, default: false},
     fullDay: { type: Boolean, default: false },
   },
