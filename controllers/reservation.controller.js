@@ -4,13 +4,34 @@ const User = require("../models/User");
 var { price } = require("../config");
 var schedule = require("node-schedule");
 const { unsubscribe } = require("../routes/users");
-const firebase = require("../firebase");
+// const firebase = require("../firebase");
 
 exports.list = async (req, res) => {
     const reservations = await Reservation.find();
     res.status(200).send({
         reservations: reservations.map(resrvation => resrvation.toJSON()),
     });
+};
+
+exports.active = async (req, res) => {
+    var userId = req.user._id;
+    console.log(userId);
+    Reservation.find({user: userId, hasEnded:false}).then(reservations=>{
+        res.json({reservations});
+    }).catch(error=>{
+        res.status(500).json({error});
+    })
+};
+
+
+exports.history = async (req, res) => {
+    var userId = req.user.id;
+    console.log(userId);
+    Reservation.find({user: userId}).then(reservations=>{
+        res.json({reservations});
+    }).catch(error=>{
+        res.status(500).json({error});
+    })
 };
 
 exports.new = async (req, res, next) => {
@@ -67,7 +88,7 @@ exports.new = async (req, res, next) => {
                     
                     return payingUser.save();
                 }).then(result=>{
-                    firebase.sendRemoteNotification("Parking has ended" ,save.username);
+                    // firebase.sendRemoteNotification("Parking has ended" ,save.username);
                     console.log(result);
                 }).catch(err=>{
                     console.log(err);
@@ -117,7 +138,7 @@ exports.end = async (req, res) => {
         payingUser.balance = payingUser.balance - expenses;
         return payingUser.save();
     }).then(result=>{
-        firebase.sendRemoteNotification("Parking has ended" ,result.username);
+        // firebase.sendRemoteNotification("Parking has ended" ,result.username);
         res.json({ expenses: expenses });
     }).catch(error=>{
         res.status(422).json({error: error.message});

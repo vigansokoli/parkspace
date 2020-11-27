@@ -2,9 +2,9 @@ const { IS_DOKKU } = process.env
 const isDokku = IS_DOKKU && IS_DOKKU === 'true' || false;
 
 // no need run this if we use the dokku deployment process
-if (!isDokku) {
+// if (!isDokku) {
   require('dotenv').config();
-}
+// }
 
 module.exports = {
   tokenSecret: process.env.TOKEN_SECRET,

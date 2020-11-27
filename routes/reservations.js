@@ -6,11 +6,13 @@ var jwtAuth = require("../config/passport-jwt");
 router.get('/',jwtAuth,reservationController.list);
 
 router.post('/new',jwtAuth, reservationController.new);
-1
+
 router.post('/end',jwtAuth, reservationController.end);
 // router.delete('/delete/:id', reservationController.delete);
 
-// router.post('/get', reservationController.get);
+router.get('/active', jwtAuth,reservationController.active);
+
+router.get('/history', jwtAuth,reservationController.history);
 
 // router.put('/update', reservationController.update);
 
