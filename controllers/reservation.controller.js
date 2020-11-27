@@ -16,7 +16,7 @@ exports.list = async (req, res) => {
 exports.active = async (req, res) => {
     var userId = req.user._id;
     console.log(userId);
-    Reservation.find({user: userId, hasEnded:false}).then(reservations=>{
+    Reservation.find({user: userId, hasEnded:false}).populate("spot").then(reservations=>{
         res.json({reservations});
     }).catch(error=>{
         res.status(500).json({error});
@@ -27,7 +27,7 @@ exports.active = async (req, res) => {
 exports.history = async (req, res) => {
     var userId = req.user.id;
     console.log(userId);
-    Reservation.find({user: userId}).then(reservations=>{
+    Reservation.find({user: userId}).populate("spot").then(reservations=>{
         res.json({reservations});
     }).catch(error=>{
         res.status(500).json({error});
@@ -100,15 +100,10 @@ exports.new = (req, res, next) => {
                 expenses = parseFloat((totalDuration * price).toFixed(2));
                 console.log(expenses)
 
-                Reservation.update({ id: savedReservation.id }, { hasEnded: true }).then(updatedFields => {
+                Reservation.update({ id: savedReservation.id }, { hasEnded: true , cost: expenses}).then(updatedFields => {
                     return User.findById(savedReservation.user);
                 }).then(payingUser=> {
-                    console.log(payingUser);
-                    console.log(expenses);
-                    console.log(payingUser.balance)
-                    payingUser.balance = payingUser.balance - expenses;
-                    console.log(payingUser.balance);
-                    
+                    payingUser.balance = payingUser.balance - expenses;                    
                     return payingUser.save();
                 }).then(result=>{
                     // firebase.sendRemoteNotification("Parking has ended" ,save.username);
@@ -151,10 +146,12 @@ exports.end = async (req, res) => {
         var totalDuration = endTimeSeconds - startTimeSeconds;
         expenses = parseFloat((totalDuration * price).toFixed(2));
 
+
         var duration = {};
         duration.hours = endTime.getHours() - startTime.getHours();
         duration.minutes = endTime.getMinutes() - startTime.getMinutes();
 
+        reservation.cost = expenses;
         reservation.duration = duration;
         reservation.hasEnded = true;
         return reservation.save();
