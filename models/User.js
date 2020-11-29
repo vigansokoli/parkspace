@@ -11,7 +11,7 @@ const UserSchema = new Schema({
   phone: {type: Number},
   // date: { type: Date, default: Date.now },
   city: String,
-  balance: {type: Number,default: 0.00},
+  balance: {type: Number,default: 5.00},
   country: String,
   street: String, 
   postalCode: Number,
@@ -51,7 +51,7 @@ UserSchema.methods.toAuthJSON = function(token) {
     city: this.city,
     country: this.country,
     street: this.street,
-    balance: this. balance,
+    balance: this.balance,
     postalCode: this.postalCode
   };
 };
