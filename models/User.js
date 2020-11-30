@@ -11,7 +11,7 @@ const UserSchema = new Schema({
   phone: {type: Number},
   // date: { type: Date, default: Date.now },
   city: String,
-  balance: {type: Number,default: 0.00},
+  balance: {type: Number,default: 40.00},
   country: String,
   street: String, 
   postalCode: Number,
@@ -66,8 +66,5 @@ UserSchema.post('save', function(error, doc, next) {
 
 // UserSchema.path('email').validate(function (email) {
 //     var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-//     return emailRegex.test(email.text); // Assuming email has a text attribute
-//  }, 'The e-mail field cannot be empty.')
-
-
+//     return emailRegex.test(email.text); // Assuming emai5fc4f1e133188b337296579c
  module.exports = mongoose.model("User", UserSchema);

@@ -4,7 +4,7 @@ var ExtractJwt = require('passport-jwt').ExtractJwt;
 const User = require("../models/User");
 var {secret} = require("../config");
 
-const sendError = (err, res) => res.status(400).json({ err: err.message });
+const sendError = (err, res) => res.status(400).json({ error: err.message });
 
 // This verifies that the token sent by the user is valid
 passport.use(

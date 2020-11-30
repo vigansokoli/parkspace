@@ -3,7 +3,7 @@ const LocalStrategy = require("passport-local").Strategy;
 const User = require("../models/User");
 
 
-const sendError = (err, res) => res.status(400).json({ err: err.toString() });
+const sendError = (err, res) => res.status(400).json({ error: err.toString() });
 
 const badCredentials = "There was a problem with your login credentials. Please make sure your username and password are correct.";
 

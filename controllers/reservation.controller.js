@@ -63,8 +63,10 @@ exports.new = (req, res, next) => {
             // } else {
 
             // }
-            if (req.body.fullDay)
+            if (req.body.fullDay){
                 reservation.fullDay = true;
+            }
+                
 
             reservation.duration = req.body.duration;
 
@@ -133,12 +135,14 @@ exports.new = (req, res, next) => {
 
 };
 
+
 exports.end = async (req, res) => {
 
     var userId = req.user;
     var expenses = 0;
+    var initialExpense = 0;
 
-    Reservation.findById(req.body.id).then(reservation => {
+    Reservation.findById(req.body.id).populate("spot").then(reservation => {
 
         if (reservation.hasEnded)
             throw new Error("The reservation had ended");
@@ -155,12 +159,13 @@ exports.end = async (req, res) => {
         if (totalDuration < 1/60)
             totalDuration = 1/60;
 
-        expenses = parseFloat((totalDuration * price).toFixed(2));
+        expenses =(totalDuration * reservation.spot.pricePerHour).toFixed(2);
 
         var duration = {};
         duration.hours = endTime.getHours() - startTime.getHours();
         duration.minutes = endTime.getMinutes() - startTime.getMinutes();
 
+        initialExpense = reservation.cost;
         reservation.cost = expenses;
         reservation.duration = duration;
         reservation.hasEnded = true;
@@ -168,11 +173,11 @@ exports.end = async (req, res) => {
     }).then(done => {
         return User.findById(done.user);
     }).then(payingUser => {
-        payingUser.balance = payingUser.balance - expenses;
+        payingUser.balance = (payingUser.balance - expenses + initialExpense).toFixed(2);
         return payingUser.save();
     }).then(result => {
         // firebase.sendRemoteNotification("Parking has ended" ,result.username);
-        res.json({ expenses: expenses });
+        res.json({ expenses: expenses, user:result });
     }).catch(error => {
         res.status(422).json({ error: error.message });
     })
