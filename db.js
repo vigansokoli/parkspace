@@ -19,7 +19,8 @@ _connect() {
         useNewUrlParser: true,
         useUnifiedTopology: true,// creates the false index for the user create
         useFindAndModify: false,
-        useCreateIndex: true
+        useCreateIndex: true,
+        autoIndex: true
       })
        .then(() => {
          console.log('Database connection successful')
