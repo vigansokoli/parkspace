@@ -46,7 +46,6 @@ exports.new = (req, res, next) => {
 
     if (userId) {
         Spot.findById(spotId).then(spotFound => {
-            console.log(spotId);
 
             if (!spotFound)
                 return Promise.reject(new Error("The spot doesn't exist"));
@@ -58,65 +57,79 @@ exports.new = (req, res, next) => {
             var reservation = new Reservation();
             reservation.spot = spot;
             var startTime, endTime;
-            // if (!req.body.fullDay) {
-            //     reservation.duration = req.body.duration;
-            // } else {
 
-            // }
-            if (req.body.fullDay){
+            if (req.body.fullDay)
                 reservation.fullDay = true;
-            }
-                
 
             reservation.duration = req.body.duration;
+
+            var estimateTime = reservation.duration.hours + reservation.duration.minutes/60;
+            var estimatedCost =  (estimateTime * spot.pricePerHour);
+            console.log("estimated cost");
+            console.log(estimatedCost);
+
+            if(estimatedCost > user.balance)
+                Promise.reject(new Error("The balance is insufficient for the transaction"));
+
+            user.balance = (user.balance -estimatedCost).toFixed(2);
+            user.save();
+
+            reservation.cost = estimatedCost;
 
             startTime = new Date(Date.now());
             endTime = new Date(Date.now());
             endTime.setMinutes(endTime.getMinutes() + reservation.duration.minutes);
             endTime.setHours(endTime.getHours() + reservation.duration.hours);
 
-            console.log(startTime);
-            console.log(endTime);
-
             reservation.startTime = startTime;
             reservation.endTime = endTime;
             reservation.user = user.id;
             reservation.licencePlate = req.body.licencePlate;
-
+            
             return reservation.save();
 
         }).then(savedReservation => {
 
             var dateStarted = new Date(savedReservation.createdAt);
+            var initialExpense = savedReservation.cost;
             dateStarted.setHours(dateStarted.getHours() + savedReservation.duration.hours);
             dateStarted.setMinutes(dateStarted.getMinutes() + savedReservation.duration.minutes);
-            console.log("the saved reservation is");
-
             res.json(savedReservation);
-            console.log(savedReservation);
+
             var stringifed = JSON.stringify(savedReservation);
+            
             var scheduling = schedule.scheduleJob(stringifed, dateStarted, function () {
-
-                savedReservation = JSON.parse(stringifed);
                 var expenses = 0;
+                Reservation.findById(savedReservation._id).then(endingReservation=>{
+                    console.log(endingReservation);
 
-                var totalDuration = savedReservation.duration.hours + savedReservation.duration.minutes / 60;
-                console.log(totalDuration);
-                
-                if (totalDuration < 1/60)
-                totalDuration = 1/60;
+                    if(endingReservation.hasEnded)
+                        return Promise.reject(new Error("Reservation has already ended"));
 
-                expenses = parseFloat((totalDuration * price).toFixed(2));
-                console.log(expenses)
+                    endingReservation = JSON.parse(stringifed);
 
-                Reservation.update({ id: savedReservation.id }, { hasEnded: true, cost: expenses }).then(updatedFields => {
+    
+                    var totalDuration = endingReservation.duration.hours + endingReservation.duration.minutes / 60;
+                    
+                    if (totalDuration < 1/60)
+                    totalDuration = 1/60;
+    
+                    expenses = (totalDuration * spot.pricePerHour).toFixed(2);
+                    console.log(expenses);
+
+                    // endingReservation.hasEnded=true;
+                    // endingReservation.cost = expenses;
+
+                    return Reservation.update({_id: endingReservation._id}, {hasEnded:true, cost: expenses});
+
+                }).then(updatedFields => {
                     return User.findById(savedReservation.user);
                 }).then(payingUser => {
-                    payingUser.balance = payingUser.balance - expenses;
+                    payingUser.balance = (payingUser.balance - expenses + initialExpense).toFixed(2);
                     return payingUser.save();
                 }).then(result => {
                     // firebase.sendRemoteNotification("Parking has ended" ,save.username);
-                    console.log(result);
+                    // console.log(result);
                 }).catch(err => {
                     console.log(err);
                 })
@@ -128,13 +141,8 @@ exports.new = (req, res, next) => {
             console.log(error);
             res.status(400).json({ error });
         });
-
-    } else {
-
     }
-
 };
-
 
 exports.end = async (req, res) => {
 

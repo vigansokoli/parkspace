@@ -51,7 +51,7 @@ UserSchema.methods.toAuthJSON = function(token) {
     city: this.city,
     country: this.country,
     street: this.street,
-    balance: this. balance,
+    balance: this.balance,
     postalCode: this.postalCode
   };
 };
