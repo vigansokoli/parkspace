@@ -37,22 +37,25 @@ exports.register = async (req, res) => {
 };
 
 exports.resetPassword = function (req, res, next) {
-  var user = req.user;
-  // var id = req.user._id;
-  var newUserFields = req.body;
+  // var user = req.user;
+  // // var id = req.user._id;
+  // var newUserFields = req.body;
 
-  var newPassword = newUserFields.newPassword;
-  var oldPassword =newUserFields.oldPassword;
+  // var newPassword = newUserFields.newPassword;
+  // var oldPassword =newUserFields.oldPassword;
 
-  if(user.validatePassword(oldPassword)){
-    user.setPassword(newPassword);
-  }
+  // if(user.validatePassword(oldPassword)){
+  //   user.setPassword(newPassword);
+  // }
 
-  user.save().then(user=>{
-    res.json(user);
-  }).catch(error=>{
-    res.status(500).json(error);
-  })
+  // user.save().then(user=>{
+  //   res.json(user);
+  // }).catch(error=>{
+  //   res.status(500).json(error);
+  // })
+  console.log("resetting password");
+  res.render('resetPass', { title: 'Password Reset' });
+  // res.render('index', { title: 'Express' });
 }
 
 // async (email, password, done) => {

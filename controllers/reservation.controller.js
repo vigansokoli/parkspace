@@ -88,12 +88,16 @@ exports.new = (req, res, next) => {
             
             return reservation.save();
 
-        }).then(savedReservation => {
+        }).then(resser => {
 
+            return Reservation.populate(resser, {path:"user"});
+            // return resser.populate("user");
+        }).then(savedReservation =>{
             var dateStarted = new Date(savedReservation.createdAt);
             var initialExpense = savedReservation.cost;
             dateStarted.setHours(dateStarted.getHours() + savedReservation.duration.hours);
             dateStarted.setMinutes(dateStarted.getMinutes() + savedReservation.duration.minutes);
+            console.log(savedReservation);
             res.json(savedReservation);
 
             var stringifed = JSON.stringify(savedReservation);

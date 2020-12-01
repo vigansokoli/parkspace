@@ -76,7 +76,7 @@ exports.delete = async (req, res) => {
 
 exports.update = async (req, res) => {
   var id = req.body.id;
-
+  console.log()
   await Spot.updateOne({ _id: id }, req.body).then(spot => {
     res.json({ spot });
   }).catch(err => {

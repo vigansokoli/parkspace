@@ -19,7 +19,7 @@ router.get('/profile', jwtAuth, userController.profile);
 
 router.put("/update",jwtAuth, userController.update);
 
-router.post("/resetPassword",jwtAuth, userController.resetPassword);
+router.get("/resetPassword", userController.resetPassword);
 
 router.delete('/delete/:id', jwtAuth, userController.delete);
 

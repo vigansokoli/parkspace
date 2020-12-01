@@ -29,6 +29,7 @@ UserSchema.methods.validatePassword = function(password) {
   return this.password === hash;
 };
 
+
 UserSchema.methods.generateJWT = function() {
   const today = new Date();
   const expirationDate = new Date(today);
