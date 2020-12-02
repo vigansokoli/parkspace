@@ -71,8 +71,9 @@ exports.update = function (req, res, next) {
   var id = req.user._id;
   var newUserFields = req.body;
 
-  User.updateOne({ _id: id }, newUserFields).then(user => {
-    res.json(user);
+  User.findByIdAndUpdate(id, newUserFields).then(user => {
+    const token = jwt.sign({ _id: id }, secret);
+    res.json(user.toAuthJSON(token));
   }).catch(err => {
     return res.status(422).json({ error: err });
   })

@@ -4,6 +4,9 @@ const User = require("../models/User");
 var { price } = require("../config");
 var schedule = require("node-schedule");
 const { unsubscribe } = require("../routes/users");
+const { auth } = require("firebase-admin");
+var jwt = require("jsonwebtoken");
+var {secret} = require("../config");
 // const firebase = require("../firebase");
 
 exports.list = async (req, res) => {
@@ -41,8 +44,8 @@ exports.new = (req, res, next) => {
     var spotId = req.body.spot;
     var userId = req.user;
     var spot, user;
-
-    console.log("the spot id is " + spotId);
+    var authJson;
+    var reservation;
 
     if (userId) {
         Spot.findById(spotId).then(spotFound => {
@@ -54,9 +57,8 @@ exports.new = (req, res, next) => {
             return User.findById(userId);
 
         }).then(user => {
-            var reservation = new Reservation();
+            reservation = new Reservation();
             reservation.spot = spot;
-            var startTime, endTime;
 
             if (req.body.fullDay)
                 reservation.fullDay = true;
@@ -65,16 +67,16 @@ exports.new = (req, res, next) => {
 
             var estimateTime = reservation.duration.hours + reservation.duration.minutes/60;
             var estimatedCost =  (estimateTime * spot.pricePerHour);
-            console.log("estimated cost");
-            console.log(estimatedCost);
 
             if(estimatedCost > user.balance)
                 Promise.reject(new Error("The balance is insufficient for the transaction"));
 
             user.balance = (user.balance -estimatedCost).toFixed(2);
-            user.save();
-
             reservation.cost = estimatedCost;
+            return user.save();
+
+        }).then(updatedUser=>{
+            var startTime, endTime;
 
             startTime = new Date(Date.now());
             endTime = new Date(Date.now());
@@ -83,20 +85,26 @@ exports.new = (req, res, next) => {
 
             reservation.startTime = startTime;
             reservation.endTime = endTime;
-            reservation.user = user.id;
+            reservation.user = updatedUser.id;
             reservation.licencePlate = req.body.licencePlate;
-            
+
+            const token = jwt.sign({ _id: updatedUser._id }, secret);
+            authJson = updatedUser.toAuthJSON(token);
             return reservation.save();
 
-        }).then(resser => {
-
-            return Reservation.populate(resser, {path:"user"});
-            // return resser.populate("user");
         }).then(savedReservation =>{
             var dateStarted = new Date(savedReservation.createdAt);
             var initialExpense = savedReservation.cost;
             dateStarted.setHours(dateStarted.getHours() + savedReservation.duration.hours);
             dateStarted.setMinutes(dateStarted.getMinutes() + savedReservation.duration.minutes);
+            console.log(savedReservation);
+
+            savedReservation= savedReservation.toObject();
+            savedReservation.user = authJson;
+
+            console.log("authjson");
+            console.log(authJson);
+
             console.log(savedReservation);
             res.json(savedReservation);
 
@@ -112,7 +120,6 @@ exports.new = (req, res, next) => {
 
                     endingReservation = JSON.parse(stringifed);
 
-    
                     var totalDuration = endingReservation.duration.hours + endingReservation.duration.minutes / 60;
                     
                     if (totalDuration < 1/60)
