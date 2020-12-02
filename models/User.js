@@ -11,19 +11,23 @@ const UserSchema = new Schema({
   phone: {type: Number},
   // date: { type: Date, default: Date.now },
   city: String,
-  balance: {type: Number,default: 40.00},
+  balance: {type: Number,default: 5.00},
   country: String,
   street: String, 
   postalCode: Number,
-  password: String,
+  password: {type: String, required:true},
   salt: String,
   resetPasswordToken: String,
   resetPasswordExpires: String
 });
 
 UserSchema.methods.setPassword = function(password) {
+  console.log("the password is " + this.password);
+  console.log("the new password is " + password);
   this.salt = crypto.randomBytes(16).toString('hex');
   this.password = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
+
+  console.log("the changed password is " + this.password);
 };
 
 

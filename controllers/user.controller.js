@@ -5,6 +5,7 @@ const { rescheduleJob } = require("node-schedule");
 const { mail } = require("../nodemail");
 const crypto = require("crypto");
 const { machineLearning } = require("firebase-admin");
+const { json } = require("express");
 
 
 exports.list = async (req, res) => {
@@ -42,8 +43,7 @@ exports.register = async (req, res) => {
 
 exports.resetPassword = function (req, res, next) {
   var user = req.user;
-  // // var id = req.user._id;
-  // var newUserFields = req.body;
+
   console.log(user);
   var token = crypto.randomBytes(20).toString('hex');
 
@@ -64,51 +64,42 @@ exports.resetPassword = function (req, res, next) {
     console.log(error);
     res.json({ error });
   })
-
-  // var newPassword = newUserFields.newPassword;
-  // var oldPassword =newUserFields.oldPassword;
-
-  // if(user.validatePassword(oldPassword)){
-  //   user.setPassword(newPassword);
-  // }
-
-  // user.save().then(user=>{
-  //   res.json(user);
-  // }).catch(error=>{
-  //   res.status(500).json(error);
-  // })
 }
 
 exports.newPassword = function (req, res, next) {
 
   User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function (err, user) {
     if (!user) {
-      req.flash('error', 'Password reset token is invalid or has expired.');
+      console.log('error', 'Password reset token is invalid or has expired.');
       return;
       // return res.redirect('back');
     }
 
-    res.render('resetPass', { title: 'Password Reset' });
+    res.render('resetPass', { title: 'Password Reset', error: "Token has expired, try again!" });
   });
 }
 
 exports.storePassword = function (req, res) {
   User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }).then(user => {
     if (!user) {
-      console.log('Password reset token is invalid or has expired.');
+      console.log('error','Password reset token is invalid or has expired.');
       // req.flash('error', 'Password reset token is invalid or has expired.');
       // return res.redirect('back');
     }
-
-    user.password = req.body.password;
+    user.setPassword(req.body.password);
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
 
     return user.save();
   }).then(updatedUser => {
+    console.log(updatedUser.toAuthJSON());
     var message = 'This is a confirmation that the password for your account ' + updatedUser.email + ' has just been changed.\n';
     mail(updatedUser, message);
-  });
+    res.json({success: updatedUser.toAuthJSON()});
+  }).catch(error=>{
+    console.log(error)
+    res.status(400).cryptojson(error);
+  })
 };
 
 // async (email, password, done) => {

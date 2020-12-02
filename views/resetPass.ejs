@@ -24,24 +24,18 @@
   <title>Hello, world!</title>
 </head>
 
-<body>
+<body>p
   <div class="container custom">
     <div class="row justify-content-center d-flex">
       <div class="col-12 align-items-center">
-        <form class="px-4 py-3" method="POST">
+        <form id="myform" class="px-4 py-3" method="POST" action="">
           <div class="form-group">
-            <label for="exampleDropdownFormPassword1">New Password</label>
-            <input type="password" class="form-control" id="password" placeholder="Password">
+            <label for="password">New Password</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Password">
           </div>
           <div class="form-group">
-            <label for="exampleDropdownFormPassword2">Confirm Password</label>
-            <input type="password" class="form-control" id="confirmPassword" placeholder="Password">
-          </div>
-          <div class="form-check">
-            <input type="checkbox" class="form-check-input" id="dropdownCheck">
-            <label class="form-check-label" for="dropdownCheck">
-              Remember me
-            </label>
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" class="form-control" id="password_again" name="password2" placeholder="Confirm Password">
           </div>
           <button type="submit" class="btn btn-primary">Reset password</button>
         </form>
@@ -65,6 +59,34 @@
     integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s"
     crossorigin="anonymous"></script>
 
+    <script>
+
+      $("#myform").submit(function(){
+        try{
+          var password1 =  $("input[name*='password']").val();
+          var password2 =  $("input[name*='password2']").val();
+
+        if(password1 == ""){
+          alert("Password must not be null");
+          return false;
+        }
+
+        if(password1.length < 8){
+          alert("Password must longer than 8 characters");
+          return false;
+        }
+
+        if(password1 != password2){
+          alert("Passwords Must Match");
+          return false
+        }
+        return true
+        }catch{
+          console.log("catch happens");
+          return false;
+        }
+      });
+    </script>
 </body>
 
 </html>
