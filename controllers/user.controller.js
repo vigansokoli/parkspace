@@ -42,12 +42,10 @@ exports.register = async (req, res) => {
 };
 
 exports.resetPassword = function (req, res, next) {
-  var user = req.user;
-
-  console.log(user);
+  // var user = req.user;
   var token = crypto.randomBytes(20).toString('hex');
 
-  User.findOne({ email: user.email }).then(user => {
+  User.findOne({ email: req.body.email }).then(user => {
     user.resetPasswordToken = token;
     user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
     return user.save();
@@ -62,7 +60,7 @@ exports.resetPassword = function (req, res, next) {
     res.json({ success: true });
   }).catch(error => {
     console.log(error);
-    res.json({ error });
+    res.json({ error: error });
   })
 }
 

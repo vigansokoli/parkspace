@@ -56,6 +56,7 @@ exports.updateAll = async (req, res) => {
 }
 
 exports.get = async (req, res) => {
+  console.log(req.body.id);
   await Spot.findById(req.body.id).then(spot => {
     res.json({ spot });
   }).catch(error => {

@@ -20,7 +20,7 @@ async function mail(user, message) {
   var mailOptions = {
     to: user.email,
     from: 'vigan.sokoli@gmail.com',
-    subject: 'Node.js Password Reset',
+    subject: "Parkspace Account Password Reset",
     text: message
   };
 
