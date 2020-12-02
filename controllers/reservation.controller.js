@@ -18,7 +18,7 @@ exports.list = async (req, res) => {
 
 exports.active = async (req, res) => {
     var userId = req.user._id;
-    console.log(userId);
+
     Reservation.find({ user: userId, hasEnded: false }).populate("spot").then(reservations => {
         res.json({ reservations });
     }).catch(error => {
@@ -29,7 +29,7 @@ exports.active = async (req, res) => {
 
 exports.history = async (req, res) => {
     var userId = req.user.id;
-    console.log(userId);
+
     Reservation.find({ user: userId }).populate("spot").then(reservations => {
         res.json({ reservations });
     }).catch(error => {
@@ -40,7 +40,6 @@ exports.history = async (req, res) => {
 exports.new = (req, res, next) => {
     var parameters = req.body;
 
-    console.log(parameters);
     var spotId = req.body.spot;
     var userId = req.user;
     var spot, user;
@@ -97,15 +96,10 @@ exports.new = (req, res, next) => {
             var initialExpense = savedReservation.cost;
             dateStarted.setHours(dateStarted.getHours() + savedReservation.duration.hours);
             dateStarted.setMinutes(dateStarted.getMinutes() + savedReservation.duration.minutes);
-            console.log(savedReservation);
 
             savedReservation= savedReservation.toObject();
             savedReservation.user = authJson;
 
-            console.log("authjson");
-            console.log(authJson);
-
-            console.log(savedReservation);
             res.json(savedReservation);
 
             var stringifed = JSON.stringify(savedReservation);
@@ -113,8 +107,6 @@ exports.new = (req, res, next) => {
             var scheduling = schedule.scheduleJob(stringifed, dateStarted, function () {
                 var expenses = 0;
                 Reservation.findById(savedReservation._id).then(endingReservation=>{
-                    console.log(endingReservation);
-
                     if(endingReservation.hasEnded)
                         return Promise.reject(new Error("Reservation has already ended"));
 
@@ -126,10 +118,6 @@ exports.new = (req, res, next) => {
                     totalDuration = 1/60;
     
                     expenses = (totalDuration * spot.pricePerHour).toFixed(2);
-                    console.log(expenses);
-
-                    // endingReservation.hasEnded=true;
-                    // endingReservation.cost = expenses;
 
                     return Reservation.update({_id: endingReservation._id}, {hasEnded:true, cost: expenses});
 
@@ -140,7 +128,7 @@ exports.new = (req, res, next) => {
                     return payingUser.save();
                 }).then(result => {
                     // firebase.sendRemoteNotification("Parking has ended" ,save.username);
-                    // console.log(result);
+                    console.log("Reservation ended successfully");
                 }).catch(err => {
                     console.log(err);
                 })

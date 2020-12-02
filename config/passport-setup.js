@@ -40,11 +40,5 @@ passport.use(
         }).catch(err=>{
             done(err, null);
         });
-        // possiblity of updating and creating at the same space
-        // User.findOneAndUpdate({ loginID: profile.id }, profile, {upsert:true}, function (err, user) {
-        //     console.log(user);
-        //     console.log(err);
-        //     return cb(err, user);
-        // });
     })
 );

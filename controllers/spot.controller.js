@@ -36,10 +36,9 @@ exports.new = async (req, res) => {
 
 exports.find = async (req, res) => {
   await Spot.findOne({ id: req.params.id }).then(spot => {
-    console.log({ spot });
     res.json({ spot });
   }).catch(error => {
-    res.status(422).send({error});
+    res.status(422).send({ error });
   });
 };
 
@@ -50,11 +49,9 @@ exports.updateAll = async (req, res) => {
       minutes: 0
     },
   }).then(spot => {
-    console.log("pizza");
-    console.log({ spot });
     res.json({ spot });
   }).catch(error => {
-    res.status(422).send({error});
+    res.status(422).send({ error });
   });
 }
 
@@ -76,7 +73,7 @@ exports.delete = async (req, res) => {
 
 exports.update = async (req, res) => {
   var id = req.body.id;
-  console.log()
+
   await Spot.updateOne({ _id: id }, req.body).then(spot => {
     res.json({ spot });
   }).catch(err => {
@@ -85,10 +82,9 @@ exports.update = async (req, res) => {
 }
 
 exports.delete = function (req, res) {
-  console.log("im am here");
-Spot.updateMany({ _id: req.params.id }, { isDeleted: true })
+  Spot.updateMany({ _id: req.params.id }, { isDeleted: true })
     .then(result => {
-      console.log(result);
+
       res.json(result);
     })
     .catch(err => {

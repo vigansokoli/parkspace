@@ -44,7 +44,7 @@ module.exports =  (req, res, next) => {
     passport.authenticate("jwt", (err, user, info) => {
         // if an error was returned by the strategy, send it to the client
         if (err) return sendError(err, res);
-        console.log(user);
+
         if (!user) return sendError(info, res);
         // manually setting the logged in user to req.user 
         // optionally, you can set it to "req.session" if you're using some sort of session

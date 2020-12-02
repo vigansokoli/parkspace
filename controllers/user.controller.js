@@ -53,7 +53,7 @@ exports.resetPassword = function (req, res, next) {
   // }).catch(error=>{
   //   res.status(500).json(error);
   // })
-  console.log("resetting password");
+
   res.render('resetPass', { title: 'Password Reset' });
   // res.render('index', { title: 'Express' });
 }
