@@ -196,7 +196,10 @@ exports.end = async (req, res) => {
         return payingUser.save();
     }).then(result => {
         // firebase.sendRemoteNotification("Parking has ended" ,result.username);
-        res.json({ expenses: expenses, user:result });
+        const token = jwt.sign({ _id: result._id }, secret);
+        var authJSON = result.toAuthJSON(token);
+
+        res.json({ expenses: expenses, user:authJSON });
     }).catch(error => {
         res.status(422).json({ error: error.message });
     })
