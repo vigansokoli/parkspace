@@ -1,7 +1,11 @@
 const User = require("../models/User");
-const {secret} = require("../config");
+const { secret } = require("../config");
 const jwt = require("jsonwebtoken");
 const { rescheduleJob } = require("node-schedule");
+const { mail } = require("../nodemail");
+const crypto = require("crypto");
+const { machineLearning } = require("firebase-admin");
+
 
 exports.list = async (req, res) => {
   const users = await User.find();
@@ -11,9 +15,9 @@ exports.list = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  if(req.err){
+  if (req.err) {
     console.log(err);
-    return res.json({error:err});
+    return res.json({ error: err });
   }
   const user = req.user;
   const token = jwt.sign({ _id: user._id }, secret);
@@ -25,8 +29,8 @@ exports.login = async (req, res) => {
 
 exports.register = async (req, res) => {
 
-  if(req.err){
-    return res.json({error: err});
+  if (req.err) {
+    return res.json({ error: err });
   }
   const user = req.user;
   const token = jwt.sign({ _id: user._id }, secret);
@@ -37,9 +41,29 @@ exports.register = async (req, res) => {
 };
 
 exports.resetPassword = function (req, res, next) {
-  // var user = req.user;
+  var user = req.user;
   // // var id = req.user._id;
   // var newUserFields = req.body;
+  console.log(user);
+  var token = crypto.randomBytes(20).toString('hex');
+
+  User.findOne({ email: user.email }).then(user => {
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    return user.save();
+  }).then(newUser => {
+
+    var message = 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+      'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+      'http://' + req.headers.host + '/users/reset/' + newUser.resetPasswordToken + '\n\n' +
+      'If you did not request this, please ignore this email and your password will remain unchanged.\n';
+
+    mail(newUser, message);
+    res.json({ success: true });
+  }).catch(error => {
+    console.log(error);
+    res.json({ error });
+  })
 
   // var newPassword = newUserFields.newPassword;
   // var oldPassword =newUserFields.oldPassword;
@@ -53,10 +77,39 @@ exports.resetPassword = function (req, res, next) {
   // }).catch(error=>{
   //   res.status(500).json(error);
   // })
-
-  res.render('resetPass', { title: 'Password Reset' });
-  // res.render('index', { title: 'Express' });
 }
+
+exports.newPassword = function (req, res, next) {
+
+  User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function (err, user) {
+    if (!user) {
+      req.flash('error', 'Password reset token is invalid or has expired.');
+      return;
+      // return res.redirect('back');
+    }
+
+    res.render('resetPass', { title: 'Password Reset' });
+  });
+}
+
+exports.storePassword = function (req, res) {
+  User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }).then(user => {
+    if (!user) {
+      console.log('Password reset token is invalid or has expired.');
+      // req.flash('error', 'Password reset token is invalid or has expired.');
+      // return res.redirect('back');
+    }
+
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+
+    return user.save();
+  }).then(updatedUser => {
+    var message = 'This is a confirmation that the password for your account ' + updatedUser.email + ' has just been changed.\n';
+    mail(updatedUser, message);
+  });
+};
 
 // async (email, password, done) => {
 //   await User.findOne({ email: email }, function (err, user) {
@@ -79,13 +132,13 @@ exports.update = function (req, res, next) {
   })
 }
 
-exports.profile = function(req,res,next){
+exports.profile = function (req, res, next) {
   var id = req.user._id;
 
   User.findById(id).then(user => {
     res.json(user.toAuthJSON());
   }).catch(error => {
-    res.status(422).send({error});
+    res.status(422).send({ error });
   })
 }
 

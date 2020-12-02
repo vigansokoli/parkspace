@@ -19,5 +19,12 @@ module.exports = {
   price : 1.7,
   secret: process.env.SECRET,
   firebaseCredUrl: process.env.FIREBASE_CRED_URL,
-  firebaseDBUrl: process.env.FIREBASE_DB_URL
+  firebaseDBUrl: process.env.FIREBASE_DB_URL,
+  smtp: {
+    server: process.env.SMTP_SERVER,
+    username: process.env.SMTP_USER,
+    password: process.env.SMTP_PASSWORD,
+    port: process.env.SMTP_PORT
+  },
+  url: process.env.URL
 };
